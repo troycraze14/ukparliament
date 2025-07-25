@@ -4,7 +4,7 @@ import jetbrains.buildServer.configs.kotlin.vcs.*
 import jetbrains.buildServer.configs.kotlin.triggers.*
 import jetbrains.buildServer.configs.kotlin.buildSteps.*
 
-version = "2025.07"
+version = "2025.03"
 
 object PeopleApiCi : BuildType({
     name = "People API CI"
