@@ -9,14 +9,14 @@
   <version>1.0-SNAPSHOT</version>
 
   <properties>
-    <kotlin.version>2025.07</kotlin.version>
+    <kotlin.version>2025.03</kotlin.version>
     <teamcity.version>2025.07</teamcity.version>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.jetbrains.teamcity</groupId>
-      <artifactId>teamcity-configs-dsl-kotlin</artifactId>
+      <artifactId>configs-dsl-kotlin</artifactId>
       <version>${teamcity.version}</version>
     </dependency>
   </dependencies>
