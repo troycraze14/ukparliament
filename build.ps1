@@ -20,3 +20,8 @@ function ci-up {
 }
 
 # You can call it directly, or dot-source this script to get the function in your shell
+if ($MyInvocation.InvocationName -eq "ci-up") {
+    ci-up
+} else {
+    Write-Host "Function 'ci-up' is defined. You can call it to start the CI stack."
+}
