@@ -9,7 +9,7 @@
   <version>1.0-SNAPSHOT</version>
 
   <properties>
-    <kotlin.version>1.8.10</kotlin.version>
+    <kotlin.version>2025.07</kotlin.version>
     <teamcity.version>2025.07</teamcity.version>
   </properties>
 
