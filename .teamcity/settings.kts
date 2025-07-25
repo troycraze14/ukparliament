@@ -1,74 +1,92 @@
 import jetbrains.buildServer.configs.kotlin.*
-import jetbrains.buildServer.configs.kotlin.buildSteps.dotnet.*
-import jetbrains.buildServer.configs.kotlin.buildSteps.dockerCommand.*
-import jetbrains.buildServer.configs.kotlin.buildSteps.script
+import jetbrains.buildServer.configs.kotlin.projectFeatures.*
+import jetbrains.buildServer.configs.kotlin.vcs.*
+import jetbrains.buildServer.configs.kotlin.triggers.*
+import jetbrains.buildServer.configs.kotlin.buildSteps.*
 
 version = "2025.07"
 
 object PeopleApiCi : BuildType({
-  name = "People API CI"
+    name = "People API CI"
 
-  vcs {
-    root(DslContext.settingsRoot)
-  }
-
-  steps {
-    dotnetRestore {
-      name     = "Restore NuGet packages"
-      projects = "**/*.sln"
-    }
-    dotnetBuild {
-      name         = "Build solution"
-      projects     = "**/*.sln"
-      configuration = "Release"
-    }
-    dotnetTest {
-      name         = "Run unit tests"
-      projects     = "**/*Tests/*.csproj"
-      configuration = "Release"
-      args         = "--no-build --verbosity normal"
+    vcs {
+        root(DslContext.settingsRoot)
     }
 
-    dockerCommand {
-      name          = "Build Docker image"
-      imagePlatform = Linux
-      commandType   = build {
-        source = path { path = "." }
-        namesAndTags = "people-api:%build.number%,localhost:5000/people-api:%build.number%"
-      }
+    params {
+        param("IMAGE_TAG", "%build.number%")
+        param("IMAGE_NAME", "localhost:5000/people-api")
+        param("FULL_IMAGE", "%IMAGE_NAME%:%IMAGE_TAG%")
     }
 
-    dockerCommand {
-      name          = "Push to local registry"
-      imagePlatform = Linux
-      commandType   = push {
-        namesAndTags = "localhost:5000/people-api:%build.number%"
-      }
+    steps {
+        script {
+            name = "Restore NuGet packages"
+            scriptContent = """
+                dotnet restore src/People.API/People.API.csproj
+            """.trimIndent()
+        }
+
+        script {
+            name = "Build solution"
+            scriptContent = """
+                dotnet build src/People.API/People.API.csproj --configuration Release
+            """.trimIndent()
+        }
+
+        script {
+            name = "Run unit tests"
+            scriptContent = """
+                dotnet test src/People.Tests/People.Tests.csproj --configuration Release --no-build --verbosity normal
+            """.trimIndent()
+        }
+
+        script {
+            name = "Build Docker image"
+            scriptContent = """
+                docker build -t people-api:%build.number% -t %FULL_IMAGE% .
+            """.trimIndent()
+        }
+
+        script {
+            name = "Push to local registry"
+            scriptContent = """
+                docker push %FULL_IMAGE%
+            """.trimIndent()
+        }
+
+        script {
+            name = "Extract image digest"
+            scriptContent = """
+                DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' "%FULL_IMAGE%")
+                echo "$DIGEST" > image.digest
+            """.trimIndent()
+        }
     }
 
-    script {
-      name = "Extract image.digest"
-      scriptContent = """
-        #!/usr/bin/env bash
-        IMAGE="localhost:5000/people-api:%build.number%"
-        DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' "$IMAGE")
-        echo "$DIGEST" > image.digest
-      """.trimIndent()
+    artifactRules = "image.digest"
+
+    features {
+        dockerSupport {
+            loginToRegistry = on {
+                dockerRegistryId = "PROJECT_EXT_1"
+            }
+        }
     }
-  }
 
-  artifactRules = "image.digest"
-
-  features {
-    feature {
-      type = "DockerSupport"
-      param("teamcity.docker.registry.0.host",          "localhost:5000")
-      param("teamcity.docker.registry.0.protocol",      "http")
-      param("teamcity.docker.registry.0.allowUnsecure", "true")
+    triggers {
+        vcs { }
     }
-  }
-
-  triggers {
-    vcs { }
-  }
 })
+
+project {
+    buildType(PeopleApiCi)
+
+    features {
+        dockerRegistry {
+            id = "PROJECT_EXT_1"
+            name = "Local Registry"
+            url = "http://localhost:5000"
+        }
+    }
+}
