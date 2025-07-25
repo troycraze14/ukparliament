@@ -1,11 +1,11 @@
-import jetbrains.buildServer.configs.kotlin.197242.*                  
-import jetbrains.buildServer.configs.kotlin.197242.buildSteps.*       
-import jetbrains.buildServer.configs.kotlin.197242.triggers.*         
-import jetbrains.buildServer.configs.kotlin.197242.vcs.*              
-import jetbrains.buildServer.configs.kotlin.197242.buildFeatures.*    
-import jetbrains.buildServer.configs.kotlin.197242.projectFeatures.*  
+import jetbrains.buildServer.configs.kotlin.*
+import jetbrains.buildServer.configs.kotlin.buildSteps.*
+import jetbrains.buildServer.configs.kotlin.triggers.*
+import jetbrains.buildServer.configs.kotlin.vcs.*
+import jetbrains.buildServer.configs.kotlin.buildFeatures.*
+import jetbrains.buildServer.configs.kotlin.projectFeatures.*
 
-version = "197242"
+version = "2025.07"
 
 project {
   // register your CI build
