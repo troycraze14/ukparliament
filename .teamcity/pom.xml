@@ -10,7 +10,7 @@
 
   <properties>
     <kotlin.version>1.8.10</kotlin.version>
-    <teamcity.version>2025.07</teamcity.version> 
+    <teamcity.version>2025.07</teamcity.version>
   </properties>
 
   <dependencies>
@@ -20,4 +20,11 @@
       <version>${teamcity.version}</version>
     </dependency>
   </dependencies>
+
+  <repositories>
+    <repository>
+      <id>teamcity-public</id>
+      <url>https://download.jetbrains.com/teamcity-repository</url>
+    </repository>
+  </repositories>
 </project>
