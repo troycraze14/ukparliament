@@ -1,3 +1,7 @@
+param(
+    [string]$Command
+)
+
 function ci-up {
     Write-Host "🚀 Starting CI stack with TeamCity server, agent and local registry..."
     docker compose -f compose.ci.yml up --build -d
@@ -19,9 +23,14 @@ function ci-up {
     }
 }
 
-# You can call it directly, or dot-source this script to get the function in your shell
-if ($MyInvocation.InvocationName -eq "ci-up") {
-    ci-up
-} else {
-    Write-Host "Function 'ci-up' is defined. You can call it to start the CI stack."
+switch ($Command) {
+    'ci-up' { ci-up }
+    default {
+        if (-not $Command) {
+            Write-Host "No command specified."
+        } else {
+            Write-Host "Unknown command: $Command"
+        }
+        Write-Host "Available commands: ci-up"
+    }
 }
