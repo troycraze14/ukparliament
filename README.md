@@ -1,42 +1,45 @@
-# Senior Engineer Take‑Home Exercise: People API Submission
+# People API Submission
+
 
 ## Part 1 – API
 
-- **_Completed_**
+**_Completed_**
 
-*Tests provided for service and minimal api enpoints*.
- 
----
+* _GET  /people/           : returns all people records_ .
+* _GET  /people/{id:int}   : returns person identified by Id_ .
+* _POST /people            : Add person to in memory data_.
+* _PUT  /people            : Update existing person_.
+* _GET  /health            : Health check_.
+
+_Tests provided for service and minimal API endpoints._ 
+
+
 
 ## Part 2 – Dockerfiles & Compose
 
 ### Runtime container
 
-- **_Completed_**
+**_Completed_**
+
+_docker compose up_ will start API locally on port 8080
+* Swagger: http://localhost:8080/swagger/index.html
     
 ### Agent container
 
-- **_Completed_**
-    
----
+**_Completed_**
+
 
 ## Part 3 – TeamCity CI stack (server + agent + pipeline)
 
-- Provide a separate `compose.ci.yml` file that launches:
-    
-    - `teamcity-server` – - **_Completed_**
+**_Completed_**
+
+_docker compose -f compose.ci.yml up_ will start containers
+* teamcity-server
+* local-registry
+* teamcity-agent   
         
-    - `teamcity-agent` – - **_Completed_**
         
-    - `registry` – - **_Completed_**
-        
-- After the containers are up and the license is accepted, when we're assessing this we will:
-    
-    1. Add a VCS root pointing at the repository.
-        
-    2. Import the Kotlin DSL project (which you committed under `/.teamcity` - see next bullet).
-        
-- In `/.teamcity` create a single build configuration that:
+In `/.teamcity` create a single build configuration that:
     
     1. Restores, builds, and tests the solution.
         
@@ -50,15 +53,12 @@
         
 - Provide a PowerShell script `build.ps1` containing a `ci-up` function/task that spins up the CI stack and waits until `http://localhost:8111` responds 200 OK.
     
-- Document the one‑liner in the README:
+**_Completed_**
     
-**_ Build.ps1 Created _**
-
 * .\build.ps1 ci-up *
 
 ---
-
-## Deliverables
+## Delivered
 
 ```
 ├── .teamcity/
@@ -74,4 +74,3 @@
 ├── Dockerfile.agent         # custom agent with Docker CLI
 └── README.md                # This document - replace with your own comments
 ```
-
