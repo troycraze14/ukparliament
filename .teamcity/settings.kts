@@ -1,11 +1,9 @@
-import jetbrains.buildServer.configs.kotlin.v2025_03.*                  // core types
-import jetbrains.buildServer.configs.kotlin.v2025_03.buildSteps.*       // script, dotnet, dockerCommand if you need them
-import jetbrains.buildServer.configs.kotlin.v2025_03.triggers.*         // vcs trigger
-import jetbrains.buildServer.configs.kotlin.v2025_03.vcs.*              // vcsRoot helpers
-import jetbrains.buildServer.configs.kotlin.v2025_03.buildFeatures.*    // dockerSupport, etc.
-import jetbrains.buildServer.configs.kotlin.v2025_03.projectFeatures.*  // dockerRegistry
-
-version = "2025.03"
+import jetbrains.buildServer.configs.kotlin.*                  // core types
+import jetbrains.buildServer.configs.kotlin.buildSteps.*       // script, dotnet, dockerCommand if you need them
+import jetbrains.buildServer.configs.kotlin.triggers.*         // vcs trigger
+import jetbrains.buildServer.configs.kotlin.vcs.*              // vcsRoot helpers
+import jetbrains.buildServer.configs.kotlin.buildFeatures.*    // dockerSupport, etc.
+import jetbrains.buildServer.configs.kotlin.projectFeatures.*  // dockerRegistry
 
 project {
   // register your CI build
