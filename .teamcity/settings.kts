@@ -1,8 +1,8 @@
-import jetbrains.buildServer.configs.kotlin.*
-import jetbrains.buildServer.configs.kotlin.projectFeatures.*
-import jetbrains.buildServer.configs.kotlin.vcs.*
-import jetbrains.buildServer.configs.kotlin.triggers.*
-import jetbrains.buildServer.configs.kotlin.buildSteps.*
+import jetbrains.buildServer.configs.kotlin.v2023_05.*
+import jetbrains.buildServer.configs.kotlin.projectFeatures.v2023_05.*
+import jetbrains.buildServer.configs.kotlin.vcs.v2023_05.*
+import jetbrains.buildServer.configs.kotlin.triggers.v2023_05.*
+import jetbrains.buildServer.configs.kotlin.buildSteps.v2023_05.*
 
 version = "2025.03"
 
