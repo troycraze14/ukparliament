@@ -1,9 +1,11 @@
-import jetbrains.buildServer.configs.kotlin.*                  // core types
-import jetbrains.buildServer.configs.kotlin.buildSteps.*       // script, dotnet, dockerCommand if you need them
-import jetbrains.buildServer.configs.kotlin.triggers.*         // vcs trigger
-import jetbrains.buildServer.configs.kotlin.vcs.*              // vcsRoot helpers
-import jetbrains.buildServer.configs.kotlin.buildFeatures.*    // dockerSupport, etc.
-import jetbrains.buildServer.configs.kotlin.projectFeatures.*  // dockerRegistry
+import jetbrains.buildServer.configs.kotlin.v197242.*                  
+import jetbrains.buildServer.configs.kotlin.v197242.buildSteps.*       
+import jetbrains.buildServer.configs.kotlin.v197242.triggers.*         
+import jetbrains.buildServer.configs.kotlin.v197242.vcs.*              
+import jetbrains.buildServer.configs.kotlin.v197242.buildFeatures.*    
+import jetbrains.buildServer.configs.kotlin.v197242.projectFeatures.*  
+
+version = "197242"
 
 project {
   // register your CI build
