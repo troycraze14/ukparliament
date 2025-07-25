@@ -1,105 +1,84 @@
-import jetbrains.buildServer.configs.kotlin.*
-import jetbrains.buildServer.configs.kotlin.buildSteps.*
-import jetbrains.buildServer.configs.kotlin.triggers.*
-import jetbrains.buildServer.configs.kotlin.vcs.*
-import jetbrains.buildServer.configs.kotlin.buildFeatures.*
+import jetbrains.buildServer.configs.kotlin.*  
+import jetbrains.buildServer.configs.kotlin.buildSteps.*  
+import jetbrains.buildServer.configs.kotlin.triggers.*  
+import jetbrains.buildServer.configs.kotlin.vcs.*  
+import jetbrains.buildServer.configs.kotlin.buildFeatures.*  
 import jetbrains.buildServer.configs.kotlin.projectFeatures.*
 
 version = "2025.07"
 
 project {
-  // register your CI build
-  buildType(PeopleApiCi)
-
-  // declare the HTTP registry as a project-level feature
+  // Project-level HTTP registry
   features {
     dockerRegistry {
-      id                    = "PROJECT_EXT_1"
+      id                    = "LOCAL_REG"
       name                  = "Local Registry"
       url                   = "http://localhost:5000"
       allowUnsecureProtocol = true
     }
   }
+
+  // Register the CI build
+  buildType(PeopleApiCi)
 }
 
 object PeopleApiCi : BuildType({
   name = "People API CI"
 
-  // hook up your VCS root (the .teamcity dir itself)
+  // VCS root pointing at the .teamcity folder itself
   vcs {
     root(DslContext.settingsRoot)
   }
 
-  // convenience params for re-use
   params {
-    param("IMAGE_TAG",  "%build.number%")
-    param("IMAGE_NAME", "localhost:5000/people-api")
-    param("FULL_IMAGE","%IMAGE_NAME%:%IMAGE_TAG%")
+    param("IMAGE_NAME",  "localhost:5000/people-api")
+    param("IMAGE_TAG",   "%build.number%")
+    param("FULL_IMAGE",  "%IMAGE_NAME%:%IMAGE_TAG%")
   }
 
   steps {
     script {
-      name = "Restore NuGet packages"
+      name          = "Restore, Build & Test"
       scriptContent = """
         dotnet restore src/People.API/People.API.csproj
+        dotnet build   src/People.API/People.API.csproj --configuration Release
+        dotnet test    src/People.Tests/People.Tests.csproj --configuration Release --no-build --verbosity normal
       """.trimIndent()
     }
 
     script {
-      name = "Build solution"
+      name          = "Build Docker Image"
       scriptContent = """
-        dotnet build src/People.API/People.API.csproj --configuration Release
+        docker build -t people-api:%build.number% -t %FULL_IMAGE% .
       """.trimIndent()
     }
 
     script {
-      name = "Run unit tests"
-      scriptContent = """
-        dotnet test src/People.Tests/People.Tests.csproj \
-          --configuration Release --no-build --verbosity normal
-      """.trimIndent()
+      name          = "Push to Registry"
+      scriptContent = "docker push %FULL_IMAGE%"
     }
 
     script {
-      name = "Build Docker image"
-      scriptContent = """
-        docker build \
-          -t people-api:%build.number% \
-          -t %FULL_IMAGE% \
-          .
-      """.trimIndent()
-    }
-
-    script {
-      name = "Push to local registry"
-      scriptContent = """
-        docker push %FULL_IMAGE%
-      """.trimIndent()
-    }
-
-    script {
-      name = "Extract image digest"
+      name          = "Extract Image Digest"
       scriptContent = """
         #!/usr/bin/env bash
-        DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' "%FULL_IMAGE%")
-        echo "$DIGEST" > image.digest
+        docker inspect --format='{{index .RepoDigests 0}}' "%FULL_IMAGE%" > image.digest
       """.trimIndent()
     }
   }
 
-  // expose the digest for downstream usage
   artifactRules = "image.digest"
 
-  // tell the agent to use your project-level registry
   features {
+    // Hook the build into your HTTP registry
     dockerSupport {
       loginToRegistry = on {
-        dockerRegistryId = "PROJECT_EXT_1"
+        dockerRegistryId = "LOCAL_REG"
       }
     }
   }
 
   triggers {
-    vcs { }
+    vcs { }  // build on every VCS change
   }
 })
